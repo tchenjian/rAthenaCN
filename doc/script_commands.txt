@@ -1,180 +1,132 @@
-//===== rAthena Documentation================================
-//= rAthena Script Commands
+//===== rAthena 文档================================
+//= rAthena 脚本命令文档
 //===== By:==================================================
 //= rAthena Dev Team
-//===== Last Updated:========================================
+//===== 最后更新:========================================
 //= 20180831
-//===== Description:=========================================
-//= A reference manual for the rAthena scripting language.
-//= Commands are sorted depending on their functionality.
+//===== 翻译:==================================================
+//= 逍遥龙
+//===== 翻译最后更新:========================================
+//= 20181105
+//===== 描述:=========================================
+//= rAthena脚本语言的参考手册。
+//= 命令根据其功能进行排序。
 //===========================================================
 
-This document is a reference manual for all the scripting commands and functions
-available in rAthena. It is not a simple tutorial. When people tell you to
-"Read The F***ing Manual", they mean this.
+本文档是rAthena中所有脚本命令和函数的参考手册。这不是一个简单的教程。当有人叫你
+“看CJ文档”时，他们就是叫你来看这个文档。
 
-This is not a place to teach you basic programming. This document will not teach
-you basic programming by itself. It's more of a reference for those who have at
-least a vague idea of what they want to do and want to know what tools they have
-available to do it. We've tried to keep it as simple as possible, but if you
-don't understand it, getting a clear book on programming in general will help
-better than yelling around the forum for help.
+这不是教你基本编程的地方。本文档本身不会教您基本的编程。对于那些至少对他们想做什么有一个模糊概念并想知道他们有什么工具可以做到的人来说，它更像是一个参考。
+我们试图让它尽可能简单，但是如果你不理解它，那么去看看C程序设计变成将比在群里大吼大叫更有帮助。
 
-A little learning never caused anyone's head to explode.
+一点编程基础都没有的话，这将会未引起任何人的头脑爆炸。
 
-Structure
+结构
 ---------
 
-The script commands are listed in no particular order, but are grouped by
-relative function.
+脚本命令没有按特定顺序列出，但按相对功能分组。
 
-*Name of the command and parameters (if any).
+*命令和参数的名称（如果是的话）。
 
-Descriptive text
+描述性文本
 
-	Small example if possible. Will usually be incomplete, it's there just to
-	give you an idea of how it works in practice.
+	尽可能会提供一些小例子。通常是不完整的，只是为了
+	让你了解它在实践中是如何运作的。
 
-To find a specific command, use Ctrl+F, (or whatever keys call up a search
-function in whatever you're reading this with) put an asterisk (*) followed by the command
-name, and it should find the command description for you.
+要找到一个特定的命令，请使用Ctrl + F，（或者无论你在阅读的内容中调用搜索功能的任何键）都会添加一个星号（*）后跟命令名称，它应该为你找到命令描述。
 
-If you find anything missing, please let us know!
+如果您发现任何遗漏，请告诉我们！
 
-Syntax
+语法
 ------
 
-Throughout this document, wherever a command wants an argument, it is given in
-<angle brackets>. This doesn't mean you should type the angle brackets. If an
-argument of a command is optional, it is given in {curly brackets}. You've
-doubtlessly seen this convention somewhere. If a command can optionally take
-an unspecified number of arguments, you'll see a list like this:
+在本文档中，只要命令需要参数，就会在<尖括号>中给出。如果命令的参数是可选的，则在{花括号}中给出。这里的尖括号，花括号是不需要打进去的。你已经无疑在某处看到了这个大括号。如果命令可以选择使用未指定数量的参数，您将看到如下格式的参数列表：
 
 command <argument>{,<argument>...<argument>}
 
-This still means they will want to be separated by commas.
+他们还是用逗号分隔的。
 
-Where a command wants a string, it will be given in "quotes", if it's a number,
-it will be given without them. Normally, you can put an expression, like a bunch
-of functions or operators returning a value, in (round brackets) instead of most
-numbers. Round brackets will not always be required, but they're often a good
-idea.
+如果一个命令需要一个字符串，它将以"引号"给出，如果它是一个数字，直接输入就可以了。(后面是关于脚本中圆括号的相关使用，这是编程基本概念，这里不做翻译！)。
 
-Wherever you refer to a map name, it's always 'map name' (.gat suffix is deprecated).
+无论您何时引用地图名称，它始终是“地图名称”（不推荐使用.gat后缀）。
 
-
-Script loading structure
+脚本加载结构
 ------------------------
+脚本由地图服务器加载，如'conf/map_athena.conf'，但是在默认配置中，它不会加载任何脚本
+文件本身。相反，它加载文件'npc /（pre-）re / scripts_main.conf'是因为本身
+包含对其他文件的引用。加载链接像这样：
 
-Scripts are loaded by the map server as referenced in the 'conf/map_athena.conf'
-configuration file, but in the default configuration, it doesn't load any script
-files itself. Instead, it loads the file 'npc/(pre-)re/scripts_main.conf' which itself
-contains references to other files. The actual scripts are loaded from txt
-files, which are linked up like this:
+npc: <文件路径>
 
-npc: <path to a filename>
+所有脚本都是通过'map_athena.conf'直接或间接加载的,加载后脚本就会起作用。没有哪个文件会被加载两次，防bug。
 
-Any line like this, invoked, ultimately, by 'map_athena.conf' will load up the
-script contained in this file, which will make the script available. No file
-will get loaded twice to prevent possible errors.
+另一个相关的配置文件选项是：
 
-Another configuration file option of relevance is:
+delnpc: <文件路径>
 
-delnpc: <path to a filename>
+这会从内存中卸载掉一个特殊的脚本文件，这个看起来没什么用，但有的时候还是需要的。
 
-This will unload a specified script filename from memory, which, while
-seemingly useless, may sometimes be required.
+每当读取时在一行中遇到'//'，该行后面的所有内容都被视为注释并被忽略。这适用于您放置它的任何地方。
 
-Whenever '//' is encountered in a line upon reading, everything beyond this on
-that line is considered to be a comment and is ignored. This works wherever you
-place it.
+// 处理脚本时将忽略此行。
 
-// This line will be ignored when processing the script.
+也可以使用块注释，您可以在任何希望忽略的文本前后放置 /* 和 */ 。
 
-Block comments can also be used, where you can place /* and */ between any text you
-wish rAthena to ignore.
+示例：
+/*此文本，
+ *无论您启动哪个新行
+ *都将被忽略，直到
+ 遇到以下*符号：*/ 
+ 
+每行前面的星号（*）是个人首选项，不是必需的。
 
-Example:
-/* This text,
- * no matter which new line you start
- * is ignored, until the following
- * symbol is encountered: */
+加载所有文件后，服务器将执行其中的所有顶级命令。此时还没有变量，除了本节中给出的命令之外，不能调用任何命令。这些命令设置了基本结构 - 创建NPC对象，生成怪物对象，设置地图标志等。此时实际上没有执行任何代码。顶级命令非常令人困惑，因为它们的结构不像您期望的那样（命令名称优先），而是通常以地图名称开头。
 
-The asterisks (*) in front of each line is a personal preference and is not required.
+顶级命令更令人困惑的是，他们中的大多数都使用制表符号来划分他们的参数。
 
-Upon loading all the files, the server will execute all the top-level commands
-in them. No variables exist yet at this point, no commands can be called other
-than those given in this section. These commands set up the basic structure - create
-NPC objects, spawn monster objects, set map flags, etc. No code is actually
-executed at this point. The top-level commands are pretty confusing, since
-they aren't structured like you would expect (command name first), but rather,
-normally start with a map name.
+为防止出现问题和混淆，标签符号写为'％TAB％'在整个文档中，即使这会使文本的可读性降低。使用不可见的符号来表示参数是这种语言的坏处之一。
 
-What's more confusing about the top-level commands is that most of them use a
-tab symbol to divide their arguments.
-
-To prevent problems and confusion, the tab symbols are written as '%TAB%'
-throughout this document, even though this makes the text a bit less readable.
-Using an invisible symbol to denote arguments is one of the bad things about
-this language.
-
-Here is a list of valid top-level commands:
+以下是有效顶级变量命令的列表：
 
 ** Set a map flag:
+**设置一个映射标志：
 
 <map name>%TAB%mapflag%TAB%<flag>
 
-This will, upon loading, set a specified map flag on a map you like. These are
-normally in files inside 'npc/mapflag' and are loaded first, so by the time the
-server's up, all the maps have the flags they should have. Map flags determine
-the behavior of the map in various situations. For more details, see 'setmapflag'
-and 'doc/mapflags.txt'.
+这将在加载时在您喜欢的地图上设置指定的地图标志。这些通常位于'npc/mapflag'内的文件中并且首先被加载，所以当服务器启动时，所有的地图都有他们应该拥有的标志。地图标志确定地图在各种情况下的行为。有关更多详细信息，请参阅 'setmapflag' 和 'doc/mapflags.txt'。
 
 ** Create a permanent monster spawn:
+**创建一个永久怪物孵化器
 
 <map name>{,<x>{,<y>{,<xs>{,<ys>}}}}%TAB%monster%TAB%<monster name>{,<monster level>}%TAB%<mob id>,<amount>{,<delay1>{,<delay2>{,<event>{,<mob size>{,<mob ai>}}}}}
 
-Map name is the name of the map the monsters will spawn on. x,y are the
-coordinates where the mob should spawn. If xs and ys are non-zero, they
-specify the 'radius' of a spawn-rectangle area centered at x,y.
-Putting zeros instead of these coordinates will spawn the monsters randomly.
-Note this is only the initial spawn zone, as mobs random-walk, they are free
-to move away from their specified spawn region.
+map name 是怪物将在其上产生的地图的名称。x,y 是怪物应该产生的坐标。如果xs和ys不为零，则它们指定以x，y为中心的生成矩形区域的“半径”。将零替换为这些坐标将随机生成怪物。请注意，这只是初始的生成区域，作为小怪随机游走，它们可以自由地离开指定的生成区域。
 
-Monster name is the name the monsters will have on screen, and has no relation
-whatsoever to their names anywhere else. It's the mob id that counts, which
-identifies monster record in 'mob_db.txt' database of monsters. If the mob name
-is given as "--ja--", the 'japanese name' field from the monster database is
-used, (which, in rAthena, actually contains an English name) if it's "--en--",
-it's the 'english name' from the monster database (which contains an uppercase
-name used to summon the monster with a GM command).
+monster name (怪物名称)是怪物在屏幕上的名称，并且与其他任何地方的名字没有任何关系。mob id是识别怪物'mob_db.txt'数据库中的怪物记录。如果怪物名称为“--ja--”，则使用怪物数据库中的“日本名称”字段（如果它是“ - ”，则在rAthena中实际包含英文名称），它是来自怪物数据库的“英文名称”（其中包含用于通过GM命令召唤怪物的大写名称）。
 
-You can specify a custom level to use for the mob different from the one of
-the database by adjoining the level after the name with a comma. eg:
-"Poring,50" for a name will spawn a monster with name Poring and level 50.
+您可以通过使用逗号连接名称后面的级别来指定用于不同于数据库的mob的自定义级别。例如：名称为“Poring，50”将生成名为Poring和level 50 的怪物。
 
-Amount is the amount of monsters that will be spawned when this command is
-executed, it is affected by spawn rates in 'battle_athena.conf'.
+Amount (数量)是执行此命令时将产生的怪物数量,这个数量比例受到 'battle_athena.conf'影响。
 
-Delay1 and delay2 control monster respawn delays - the first one is the fixed
-base respawn time, and the second is random variance on top of the base time.
-Both values are given in milliseconds (1000 = 1 second).
-Note that the server also enforces a minimum respawn delay of 5 seconds.
+Delay1和delay2控制怪物重生延迟 ，
+- 第一个是固定基础重生时间，
+第二个是基准时间之上的随机时间。
+两个值都以毫秒（1000 = 1秒）给出。
+请注意，服务器还会强制执行5秒的最小重生延迟。
 
-Event is a script event to be executed when the mob is killed. The event must
-be in the form "NPCName::OnEventName" to execute, and the event name label
-should start with "On". As with all events, if the NPC is an on-touch NPC, the
-player who triggers the script must be within 'trigger' range for the event to
-work.
+event (事件) 是在怪被杀死时执行的脚本事件。事件必须采用“NPCName :: OnEventName”形式才能执行，事件名称标签
+应以“On”开头。与所有事件一样，如果NPC是触摸式NPC，则触发脚本的玩家必须在“触发”范围内才能使事件
+起作用。
 
 There are two optional fields for monster size and AI.
+怪物有两个可选字段：大小和AI。
 
-<mob size> can be:
+<mob size> 可以是:
 	Size_Small	(0)
 	Size_Medium	(1)
 	Size_Large	(2)
 
-<mob ai> can be:
+<mob ai> 可以是:
 	AI_NONE		(0)		(default)
 	AI_ATTACK	(1)		(attack/friendly)
 	AI_SPHERE	(2)		(Alchemist skill)
@@ -183,99 +135,67 @@ There are two optional fields for monster size and AI.
 	AI_LEGION	(5)		(Sera skill)
 	AI_FAW		(6)		(Mechanic skill)
 
-Alternately, a monster spawned using 'boss_monster' instead of 'monster' is able
-to be detected on the map with the SC_BOSSMAPINFO status (used by Convex Mirror).
+或者一个怪物用 'boss_monster' 代替 'monster'，这样就可以被BOSS雷达检测到（原文：is able
+to be detected on the map with the SC_BOSSMAPINFO status (used by Convex Mirror).）。
 
 ** NPC names
+** NPC名称
 
-/!\ WARNING: this applies to warps, NPCs, duplicates and shops /!\
+警告：/!\可以用在传送，NPCs，商店
+(原文:/!\ WARNING: this applies to warps, NPCs, duplicates and shops /!\)
 
-NPC names are kinda special and are formatted this way:
+NPC名称有点特殊，并以这种方式格式化：
 
-<Display name>{::<Unique name>}
+<NPC显示名称>{::<NPC全局唯一名称>}
 
-All NPCs need to have a unique name that is used for identification purposes.
-When you have to identify a NPC by its name, you should use <Unique name>.
-If <Unique name> is not provided, use <Display name> instead.
+所有NPC都需要具有用于识别的唯一名称。如果要通过NPC名称识别识别NPC，则应使用<唯一名称>。如果未提供<唯一名称>，才用<显示名称>。
 
-The client has a special feature when displaying names:
-if the display name contains a '#' character, it hides that part of the name.
-ex: if your NPC is named 'Hunter#hunter1', it will be displayed as 'Hunter'
+显示名称时，客户端会隐藏“＃”字符后的名称部分
+例如：如果你的NPC被命名为'Hunter＃hunter1'，它将被显示为'Hunter'
 
-<Display name> must be at most 24 characters in length.
-<Unique name> must be at most 24 characters in length.
+NPC显示名称，NPC全局唯一名称，长度最多为24个字符。
 
 ** Define a warp point
+**定义一个传送点
 
 <from mapname>,<fromX>,<fromY>,<facing>%TAB%warp%TAB%<warp name>%TAB%<spanx>,<spany>,<to mapname>,<toX>,<toY>
 <from mapname>,<fromX>,<fromY>,<facing>%TAB%warp2%TAB%<warp name>%TAB%<spanx>,<spany>,<to mapname>,<toX>,<toY>
 
-This will define a warp NPC that will warp a player between maps, and while most
-arguments of that are obvious, some deserve special mention.
+这将定义一个传送NPC，它将在地图之间传送玩家，而大多数情况下这些参数是很好理解的，就不再赘述。
 
-SpanX and SpanY will make the warp sensitive to a character who didn't step
-directly on it, but walked into a zone which is centered on the warp from
-coordinates and is SpanX in each direction across the X axis and SpanY in each
-direction across the Y axis.
+SpanX和SpanY会使warp 传送一个区域，但走进一个以经线为中心的区域坐标是跨越X轴的每个方向的SpanX和每个方向上的SpanY横跨Y轴的方向。
 
-Warp NPC objects also have a name, because you can use it to refer to them later
-with 'enablenpc'/'disablenpc'
+Warp NPC对象也有名称，因为您可以在以后使用名称来引用它们，比如使用'enablenpc'/'disablenpc'
 
-Facing of a warp object is irrelevant, it is not used in the code and all
-current scripts have a zero in there.
+Facing （朝向）对 warp对象是没用的，这个参数不会在任何代码里面使用，并且所有代码的 warp对象 Facing 都是0.
 
-Unlike 'warp', 'warp2' will also be triggered by hidden player.
+与'warp'不同，'warp2'也会被隐藏的玩家触发。
 
 ** Define an NPC object.
+**定义NPC对象。
 
 <map name>,<x>,<y>,<facing>%TAB%script%TAB%<NPC Name>%TAB%<sprite id>,{<code>}
 <map name>,<x>,<y>,<facing>%TAB%script%TAB%<NPC Name>%TAB%<sprite id>,<triggerX>,<triggerY>,{<code>}
 
-This will place an NPC object on a specified map at the specified location, and
-is a top-level command you will use the most in your custom scripting. The NPCs
-are triggered by clicking on them, and/or by walking in their trigger area, if
-defined, see that below.
+这会将NPC对象放在指定位置的指定地图上，并且是您在自定义脚本中使用最多的顶级命令。NPC通过点击它们和/或在其触发区域中行走来触发，如果定义，见下文。
 
-Facing is a direction the NPC sprite will face in. Not all NPC sprites have
-different images depending on the direction you look from, so for some facing
-will be meaningless. Facings are counted counterclockwise in increments of 45
-degrees, where 0 means facing towards the top of the map. (So to turn the sprite
-towards the bottom of the map, you use facing 4, and to make it look southeast
-it's facing 5.)
+Facing （朝向）是NPC的朝向。不是所有NPC精灵在你的观察角度上都有不同的图像，所以一些朝向没有用。朝向以逆时针方向计数，增量是45度，其中0表示朝向地图的顶部。（所以转动精灵在地图的底部，你使用面向4，并使其看起来向东南面对5.）
 
-Sprite ID is the sprite number or constant used to display this particular NPC.
-You may also use a monster's ID instead to display a monster sprite for this NPC.
-It is possible to use a job sprite as well, but you must first define it as a
-monster sprite in 'mob_avail.txt', a full description on how to do this is not
-in the scope of this manual.
-A '-1' Sprite ID will make the NPC invisible (and unclickable).
-A '111' Sprite ID will make an NPC which does not have a sprite, but is still
-clickable, which is useful if you want to make a clickable object of the 3D
-terrain.
+Sprite ID是用于显示此特定NPC的精灵数或常量。您也可以使用怪物的ID来显示此NPC的怪物精灵。也可以使用工作精灵，但必须先将其定义为'mob_avail.txt'中的怪物精灵，关于如何做到这一点的完整描述不是在本手册的范围内。'-1'精灵ID将使NPC不可见（并且不可点击）。'111'精灵ID将使NPC没有精灵，但仍然是可点击，如果您想制作3D的可点击对象，这在地形中非常有用。
 
-TriggerX and triggerY, if given, will define an area, centered on NPC and
-spanning triggerX cells in every direction across X and triggerY in every
-direction across Y. Walking into that area will trigger the NPC. If no
-'OnTouch:' special label is present in the NPC code, the execution will start
-from the beginning of the script, otherwise, it will start from the 'OnTouch:'
-label. Monsters can also trigger the NPC, though the label 'OnTouchNPC:' is
-used in this case.
+TriggerX和triggerY，如果给定，将定义一个以NPC和N为中心的区域跨越X的每个方向上的triggerX单元和每个中的triggerY穿过Y的方向。走进那个区域会触发NPC。如果没有'OnTouch：'特殊标签出现在NPC代码中，执行将开始从脚本的开头，否则，它将从'OnTouch：'开始标签。怪物也可以触发NPC，这种情况下使用标签'OnTouchNPC：'。
 
-The code part is the script code that will execute whenever the NPC is
-triggered. It may contain commands and function calls, descriptions of which
-compose most of this document. It has to be in curly brackets, unlike elsewhere
-where we use curly brackets, these do NOT signify an optional parameter.
+代码部分是指每当NPC执行时将执行的脚本代码触发。它可能包含命令和函数调用，其描述撰写本文档的大部分内容。与其他地方不同，它必须是大括号我们使用花括号，这些不表示可选参数。
 
 ** Define a 'floating' NPC object.
+**定义'浮动'NPC对象。
 
 -%TAB%script%TAB%<NPC Name>%TAB%-1,{<code>}
 
-This will define an NPC object not triggerable by normal means. This would
-normally mean it's pointless since it can't do anything, but there are
-exceptions, mostly related to running scripts at specified time, which is what
-these floating NPC objects are for. More on that below.
+这将定义一个不能通过常规手段触发的NPC对象。这个通常意味着它没有意义，因为它啥都不做，但有例外，主要在指定时间运行脚本有关，这是这些浮动NPC对象的作用。相关内容如下。
 
 ** Define a shop/cashshop/itemshop/pointshop NPC.
+**定义商店/P点商店/ 物品商店 / 积分商店 NPC。
 
 -%TAB%shop%TAB%<NPC Name>%TAB%<sprite id>,<itemid>:<price>{,<itemid>:<price>...}
 <map name>,<x>,<y>,<facing>%TAB%shop%TAB%<NPC Name>%TAB%<sprite id>,<itemid>:<price>{,<itemid>:<price>...}
@@ -291,30 +211,17 @@ these floating NPC objects are for. More on that below.
 
 <map name>,<x>,<y>,<facing>%TAB%marketshop%TAB%<NPC Name>%TAB%<sprite id>,<itemid>:<price>:<quantity>{,<itemid>:<price>:<quantity>...}
 
-This will define a shop NPC, which, when triggered (which can only be done by
-clicking) will cause a shop window to come up. No code whatsoever runs in shop
-NPCs and you can't change the prices otherwise than by editing the script
-itself.
+这将定义一个商店NPC，当触发时（只能通过点击）将导致商店橱窗出现。没有任何代码在商店里运行NPC和你不能通过编辑脚本来改变价格,除非修改它本身。
 
-The Item ID is the number of item in the 'item_db.txt' database. If Price is set
-to -1, the 'buy price' given in the item database will be used. Otherwise, the
-price you gave will be used for this item, which is how you create differing
-prices for items in different shops.
+Item ID 是'item_db.txt'数据库中的项目编号。如果设置了价格到-1，将使用项目数据库中给出的“购买价格”。否则，你给的价格将用于这个项目，这是你创建不同的方式不同商店的商品价格。
 
-There are other types of shops available:
-cashshop - use "cashshop" in place of "shop" to use the Cash Shop interface, allowing
-you to buy items with special points that are stored as account variables
-called  #CASHPOINTS and #KAFRAPOINTS. This type of shop will not allow you to sell
-items at it, only make purchases. The layout used to define sale items still count, and
-"<price>" refers to how many points will be spent purchasing the them.
+还有其他类型的商店：
+cashshop  - 使用“cashshop”代替“shop”来使用Cash Shop界面，允许您可以购买具有存储为帐户变量的特殊积分的物品叫#CASHPOINTS和#KAFRAPOINTS。这种类型的商店不允许您出售它上面的物品，只能购买。用于定义销售商品的布局仍然有效，并且“<price>”是指购买它们需要多少积分。
 
-"itemshop" and "pointshop" use the Shop interface, allowing you to buy items with a specific
-item or special points from a variable. 'pointshop' only supports permanent character variables,
-temporary character variables, permanent local account variables or permanent global account
-variables. These variables must be of integer type, not string. 'discount' flag is an
-optional value which makes the price at that shop become affected by discount skill.
+使用Shop界面，允许您购买具体的物品变量中的项目或特殊点券。'pointshop'仅支持永久字符变量，临时字符变量，永久本地帐户变量或永久全局帐户变量。这些变量必须是整数类型，而不是字符串。'discount（折扣）标志是一个可选值使该商店的价格受到折扣技巧的影响。
 
 ** Define an warp/shop/cashshop/itemshop/pointshop/NPC duplicate.
+**定义传送/商店/P店/ 物品店 / 点券店 /NPC  等的副本。
 
 warp/warp2: <map name>,<x>,<y>,<facing>%TAB%duplicate(<label>)%TAB%<NPC Name>%TAB%<spanx>,<spany>
 shop/cashshop/itemshop/pointshop/npc: -%TAB%duplicate(<label>)%TAB%<NPC Name>%TAB%<sprite id>
@@ -322,227 +229,164 @@ shop/cashshop/itemshop/pointshop/npc: <map name>,<x>,<y>,<facing>%TAB%duplicate(
 npc: -%TAB%duplicate(<label>)%TAB%<NPC Name>%TAB%<sprite id>,<triggerX>,<triggerY>
 npc: <map name>,<x>,<y>,<facing>%TAB%duplicate(<label>)%TAB%<NPC Name>%TAB%<sprite id>,<triggerX>,<triggerY>
 
-This will duplicate an warp/shop/cashshop/itemshop/pointshop/NPC referred to by 'label'.
-Warp duplicates inherit the target location.
-Shop/cashshop/itemshop/pointshop duplicates inherit the item list.
-NPC duplicates inherit the script code.
-The rest (name, location, facing, sprite ID, span/trigger area)
-is obtained from the definition of the duplicate (not inherited).
+这将复制 'label'指向的 warp / shop / cashshop / itemshop / pointshop / NPC  对象。
+Warp重复项继承目标位置。
+商店/现金商店/ itemshop / pointhop duplicates继承商品列表。
+NPC重复项继承脚本代码。
+其余的（名称，位置，面向，精灵ID，跨度/触发区域）是从副本的定义中获得的（不是继承的）。
 
 ** Define a function object
+**定义一个函数对象
 
 function%TAB%script%TAB%<function name>%TAB%{<code>}
 
-This will define a function object, callable with the 'callfunc' command (see
-below). This object will load on every map server separately, so you can get at
-it from anywhere. It's not possible to call the code in this object by
-anything other than the 'callfunc' script command.
+这将定义一个函数对象，可以使用'callfunc'命令调用（参见下面）。此对象将分别加载到每个地图服务器上，以便您可以访问它来自任何地方。只有'callfunc'脚本命令可以调用这个函数。
 
-The code part is the script code that will execute whenever the function is
-called with 'callfunc'. It has to be in curly brackets, unlike elsewhere where
-we use curly brackets, these do NOT signify an optional parameter.
+代码部分是每当函数执行时将执行的脚本代码使用'callfunc'调用。它必须是大括号，与其他地方不同我们使用花括号，这些不表示可选参数。
 
-Once an object is defined which has a 'code' field to its definition, it
-contains script commands which can actually be triggered and executed.
+一旦定义了一个包含代码区域的对象，就实际可以触发和执行的。
 
 ~ RID? GID? ~
 
-What a RID is and why do you need to know
+什么是RID，为什么你需要知道
 -----------------------------------------
 
-Most scripting commands and functions will want to request data about a
-character, store variables referenced to that character, send stuff to the
-client connected to that specific character. Whenever a script is invoked by a
-character, it is passed a so-called RID - this is the account ID number of a
-character that caused the code to execute by clicking on it, walking into its
-OnTouch zone, or otherwise.
+大多数脚本命令和函数都希望请求有关一个角色的数据，存储引用该角色的变量，将内容发送给客户端连接到该特定字符。每当脚本被角色调用时，它传递一个所谓的RID  - 这是一个角色的帐户ID。
 
-If you are only writing common NPCs, you don't need to bother with it. However,
-if you use functions, if you use timers, if you use clock-based script
-activation, you need to be aware of all cases when a script execution can be
-triggered without a RID attached. This will make a lot of commands and functions
-unusable, since they want data from a specific character, want to send stuff to
-a specific client, want to store variables specific to that character, and they
-would not know what character to work on if there's no RID.
+如果您只是在写一个通用的NPC，可以不用管。然而，如果使用函数，如果使用计时器，则使用基于时钟的脚本激活时，您需要了解脚本执行的所有情况在没有附加RID的情况下触发。这将产生许多命令和功能无法使用，因为他们想要来自特定角色的数据，想要发送东西特定客户端，想要存储特定于该角色的变量，以及它们如果没有RID，我不知道要处理什么角色。
 
-Unless you use 'attachrid' to explicitly attach a character to the script first.
+除非您使用'attachrid'首先将角色显式附加到脚本。
 
-Whenever we say 'invoking character', we mean 'the character who's RID is
-attached to the running script. The script function "playerattached" can be
-used to check which is the currently attached player to the script (it will
-return 0 if the there is no player attached or the attached player no longer
-is logged on to the map-server).
+每当我们说 'invoking character'（“调用角色符”）时，我们的意思是“RID所在的角色附加到正在运行的脚本。脚本函数“playerattached”可以用来检查哪个是当前附加的脚本玩家（它会如果没有附加玩家或附加玩家不再返回0登录到地图服务器）。
 
-But what about GID?
+GID又是什么
 -------------------
 
-GID stands for the Game ID of something, this can either be the GID obtained
-through mobspawn (mob control commands) or the account ID of a character.
-Another way would be to right click on a mob, NPC or char as GM sprited char
-to view the GID.
+GID代表某物的游戏ID，这可以是怪物ID(通过mobspawn获取怪物ID，mobspawn 怪物控制命令），也可以角色ID。另一种方法是右键点击暴徒，NPC或char作为GM sprited char查看GID。
 
-See also 'getpetinfo', 'getmercinfo', 'gethominfo', and 'geteleminfo'.
+另请参阅'getpetinfo'，'getmercinfo'，'gethominfo'和'geteleminfo'。
 
-This is mostly used for the new version of skill and the mob control commands
-implemented.
+这主要用于实现新版技能和mob控制命令。
 
-Item and pet scripts
+物品和宠物脚本
 --------------------
 
-Each item in the item database has three special fields - Script , OnEquip_Script
-and OnUnequip_Script. The first is script code run every time a character equips the item,
-with the RID of the equipping character. Every time they unequip an item, all
-temporary bonuses given by the script commands are cleared, and all the scripts
-are executed once again to rebuild them. This also happens in several other
-situations (like upon login) but the full list is currently unknown.
+项目数据库中的每个项目都有三个特殊字段 -  Script，OnEquip_Script和OnUnequip_Script。第一个是每次角色装备物品时运行的脚本代码，使用装备角色的RID。每当他们脱下一件商品时，全部清除脚本命令给出的临时奖励以及所有脚本再次执行以重建它们。其他几个也会发生这种情况情况（如登录时），但完整列表目前未知。
 
-OnEquip_Script is a piece of script code run whenever the item is used by a character
-by double-clicking on it. OnUnequip_Script runs whenever the
-equipment is unequip by a character
+OnEquip_Script 当角色使用装备时，会调用这段脚本。
+OnUnequip_Script 当角色脱下装备时，会调用这段脚本。
 
-Not all script commands work properly in the item scripts. Where commands and
-functions are known to be meant specifically for use in item scripts, they are
-described as such.
+并非所有脚本命令在物品脚本中都能正常工作。特别是一些已经作了相关说明的命令跟函数。
 
-Every pet in the pet database has a PetScript field, which determines pet
-behavior. It is invoked wherever a pet of the specified type is spawned.
-(hatched from an egg, or loaded from the char server when a character who had
-that pet following them connects) This may occur in some other situations as
-well. Don't expect anything other than commands definitely marked as usable in
-pet scripts to work in there reliably.
+宠物数据库中的每个宠物都有一个PetScript字段，用于确定宠物行为。只要生成指定类型的宠物，就会调用它。（从一个蛋孵化出来，或者当一个角色拥有时，从char服务器加载跟随他们的宠物）这可能发生在其他一些情况。不要指望宠物脚本能像其他明确的脚本那样可靠的工作。
 
 Numbers
+数
 -------
 
-Beside the common decimal numbers, which are nothing special whatsoever (though
-do not expect to use fractions, since ALL numbers are integer in this language),
-the script engine also handles hexadecimal numbers, which are otherwise
-identical. Writing a number like '0x<hex digits>' will make it recognized as a
-hexadecimal value. Notice that 0x10 is equal to 16. Also notice that if you try
-to 'mes 0x10' it will print '16'.
+除了常见的十进制数字之外，它们并不特别（不要期望使用分数，因为在这种语言中所有数字都是整数），脚本引擎也处理十六进制数字。写一个像'0x <hex digits>'这样的数字将使它被识别为a十六进制值。请注意，0x10等于16.另请注意，如果您尝试到'mes 0x10'它将打印'16'。
 
-Number values can't exceed the limits of an integer variable: Any number
-greater than INT_MAX (2147483647) or smaller than INT_MIN (-2147483648) will
-be capped to those values and will cause a warning to be reported.
+数值不能超过整数变量的限制：任何数字大于INT_MAX（2147483647）或小于INT_MIN（-2147483648）将被限制为这些值并将导致报告警告。
 
 Variables
+变量
 ---------
 
-The meat of every programming language is variables - places where you store
-data.
+每种编程语言的核心都是变量 - 存储数据的地方。
 
-In the rAthena scripting language, variable names are not case sensitive.
+在rAthena脚本语言中，变量名称不区分大小写。
 
-Variables are divided into and uniquely identified by the combination of:
-prefix  - determines the scope and extent (or lifetime) of the variable
-name    - an identifier consisting of '_' and alphanumeric characters
-postfix - determines the type of the variable: integer or string
+变量分为以下组合并唯一标识：
+prefix  - 确定变量的范围和范围（或生命周期）
+name  - 由“_”和字母数字字符组成的标识符
+postfix  - 确定变量的类型：整数或字符串
 
-Scope can be:
-global    - global to all servers
-local     - local to the server
-account   - attached to the account of the character identified by RID
-character - attached to the character identified by RID
-npc       - attached to the NPC
-scope     - attached to the scope of the instance
+z作用域可以是：
+全局 - 全局到所有服务器
+本地 - 服务器本地
+帐户 - 附加到RID标识的角色的帐户
+角色  - 附加到RID标识的角色
+npc  - 附属于NPC
+scope  - 附加到实例的范围
 
-Extent can be:
-permanent - They still exist when the server resets.
-temporary - They cease to exist when the server resets.
+范围可以是：
+permanent   - 服务器重置时它们仍然存在。
+temporary  - 服务器重置时它们不再存在。
 
 Prefix: scope and extent
-nothing  - A permanent variable attached to the character, the default variable
-           type. They are stored by char-server in the `char_reg_num` and
-           `char_reg_str`.
-"@"      - A temporary variable attached to the character.
-           SVN versions before 2094 revision and RC5 version will also treat
-           'l' as a temporary variable prefix, so beware of having variable
-           names starting with 'l' if you want full backward compatibility.
-"$"      - A global permanent variable.
-           They are stored by map-server in database table `mapreg`.
-"$@"     - A global temporary variable.
-           This is important for scripts which are called with no RID
-           attached, that is, not triggered by a specific character object.
-"."      - A NPC variable.
-           They exist in the NPC and disappear when the server restarts or the
-           NPC is reloaded. Can be accessed from inside the NPC or by calling
-           'getvariableofnpc'. Function objects can also have .variables which
-           are accessible from inside the function, however 'getvariableofnpc'
-           does NOT work on function objects.
-".@"     - A scope variable.
-           They are unique to the instance and scope. Each instance has its
-           own scope that ends when the script ends. Calling a function with
-           callsub/callfunc starts a new scope, returning from the function
-           ends it. When a scope ends, its variables are converted to values
-           ('return .@var;' returns a value, not a reference).
-"'"      - An instance variable.
-           These are used with the instancing system and are unique to each
-           instance type.
-"#"      - A permanent local account variable.
-           They are stored by char-server in the `acc_reg_num` table and
-           `acc_reg_str`.
-"##"     - A permanent global account variable stored by the login server.
-           They are stored in the `global_acc_reg_num` table and
-		   `global_acc_reg_str`.
-           The only difference you will note from normal # variables is when
-           you have multiple char-servers connected to the same login server.
-           The # variables are unique to each char-server, while the ## variables
-           are shared by all these char-servers.
+前缀：范围和范围
+nothing   - 附加到角色的永久变量，默认变量
+           类型。它们由char-server存储在`char_reg_num`和
+           `char_reg_str`。
+"@"     - 附加到角色的临时变量。
+           如果要完全向后兼容，则以“l”开头的名称。
+"$"      - 全局永久变量。
+           它们由map-server存储在数据库表`mapreg`中。
+"$@"     - 全局临时变量。
+	   这对于没有附加RID调用的脚本很重要，即不是由特定的角色对象触发的。
+"."      -  NPC变量。
+	    它们存在于NPC中，并在服务器重新启动或NPC重新加载消失时消失。可以从NPC内部访问或通过调
+	    用'getvariableofnpc'。函数对象也可以有.variables可以从函数内部访问，但是'getvariableofnpc'
+	    不适用于函数对象。
+".@"      - 范围变量。
+	   它们是副本和范围所特有的。每个副本都有它的脚本结束时结束的自有范围。用函数调用函数
+           callsub / callfunc启动一个新的作用域，从函数返回结束它。范围结束时，其变量将转换为值
+           （'return。@ var;'返回一个值，而不是一个引用）。
+"'"      - 副本变量。
+	   它们与副本系统一起使用，并且每个副本都是独一无二的变量的类型。
+"#"     - 永久本地帐户变量。
+           由char-server存储在`acc_reg_num` 和 `acc_reg_str` 表中。
+"##"    - 登录服务器存储的永久全局帐户变量。
+           它们存储在`global_acc_reg_num`和 `global_acc_reg_str` 表中。
+	   您有多个 char-servers 连接到同一个 login server。
+	   ＃变量对每个char-server都是唯一的，而##变量则是唯一的由所有这些char-servers共享。
 
 Postfix: integer or string
-nothing - integer variable, can store positive and negative numbers, but only
-          whole numbers (so don't expect to do any fractional math)
-'$'     - string variable, can store text
+后缀：整数或字符串
+nothing - 整数变量，可以存储正数和负数，但仅限整数（所以不要指望做任何分数数学）
+'$'     - 字符串变量，可以存储文本
 
-Examples:
-  name  - permanent character integer variable
-  name$ - permanent character string variable
- @name  - temporary character integer variable
- @name$ - temporary character string variable
- $name  - permanent global integer variable
- $name$ - permanent global string variable
-$@name  - temporary global integer variable
-$@name$ - temporary global string variable
- .name  - NPC integer variable
- .name$ - NPC string variable
-.@name  - scope integer variable
-.@name$ - scope string variable
- 'name  - instance integer variable
- 'name$ - instance string variable
- #name  - permanent local account integer variable
- #name$ - permanent local account string variable
-##name  - permanent global account integer variable
-##name$ - permanent global account string variable
+例子：
+  name  - 永久字符整数变量
+  name$ - 永久字符串变量
+ @name  - 临时字符整数变量
+ @name$ - 临时字符串变量
+ $name  - 永久全局整数变量
+ $name$ - 永久全局字符串变量
+$@name  - 临时全局整数变量
+$@name$ - 临时全局字符串变量
+ .name  - NPC整数变量
+ .name$ - NPC字符串变量
+.@name  - 范围整数变量
+.@name$ - 范围字符串变量
+ 'name  - 实例整数变量
+ 'name$ - 实例字符串变量
+ #name  - 永久本地帐户整数变量
+ #name$ - 永久本地帐户字符串变量
+##name  - 永久全局帐户整数变量
+##name$ - 永久全局帐户字符串变量
 
-If a variable was never set, it is considered to equal zero for integer
-variables or an empty string ("", nothing between the quotes) for string
-variables. Once you set it to that, the variable is as good as forgotten
-forever, and no trace remains of it even if it was stored with character or
-account data.
+如果从未设置变量，则认为整数等于零字符串的变量或空字符串（“”，引号之间没有）变量。这么设置可以删除变量。
 
-Some variables are special, that is, they are already defined for you by the
-scripting engine. You can see the full list in 'src/map/script_constants.h', which
-is a file you should read, since it also allows you to replace lots of numbered
-arguments for many commands with easier to read text. The special variables most
-commonly used are all permanent character-based variables:
+有些变量是特殊的，也就是说，它们已经由你脚本引擎定义了。您可以在'src/map/script_constants.h'中看到完整列表是您应该阅读的文件，因为它还允许您替换大量编号许多命令的参数，更容易阅读文本。特殊变量最多常用的是所有基于字符的永久变量：
 
-Zeny        - Amount of Zeny.
-Hp          - Current amount of hit points.
-MaxHp       - Maximum amount of hit points.
-Sp          - Current spell points.
-MaxSp       - Maximum amount of spell points.
-StatusPoint - Amount of status points remaining.
-SkillPoint  - Amount of skill points remaining.
-BaseLevel   - Character's base level.
-JobLevel    - Character's job level.
-BaseExp     - Amount of base experience points.
-JobExp      - Amount of job experience points.
-NextBaseExp - Amount of base experience points needed to reach the next level.
-NextJobExp  - Amount of job experience points needed to reach the next level.
-Weight      - Amount of weight the character currently carries.
-MaxWeight   - Maximum weight the character can carry.
-Sex         - 0 if female, 1 if male.
-Class       - Character's job.
+Zeny        - Zeny的数量。
+Hp          - 当前生命值.
+MaxHp       - 最大生命值.
+Sp          - 当前的法术点数.
+MaxSp       - 最大法术点数.
+StatusPoint - 剩余属性点的数量.
+SkillPoint  - 剩余技能点数.
+BaseLevel   - 角色的基础等级.
+JobLevel    - 角色的职业等级.
+BaseExp     - 基本经验值的数量.
+JobExp      - 工作经验值.
+NextBaseExp - 达到下一级所需的基本经验值.
+NextJobExp  - 达到下一级所需的职业经验点数.
+Weight      - 角色当前携带的重量.
+MaxWeight   - 角色可以携带的最大重量.
+Sex         - 女性为0，男性为1.
+Class       - 角色的职业.
 Upper       - 0 if the character is a normal class, 1 if advanced, 2 if baby.
 BaseClass   - The character's 1-1 'normal' job, regardless of Upper value.
               For example, this will return Job_Acolyte for Acolyte, Priest/Monk,
